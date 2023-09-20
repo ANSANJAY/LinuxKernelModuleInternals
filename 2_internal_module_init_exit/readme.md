@@ -52,32 +52,63 @@ Imagine you're hosting a party 🎉. You have a set of actions to do when guests
 
 Now, you have a standard protocol (let's call it the "party protocol") which is a checklist of things to do. But you want to personalize it for each party. The `module_init` and `module_exit` macros help you do that. They ensure that your personal actions still fit the "party protocol". If they don't, you'll be notified (like a warning) so you can fix it. This ensures your party always goes smoothly! 🥳👌
 
+**Section 1: Explain the technical concept**
+
+📚 **GCC Attribute `alias`**:
+
+The GNU Compiler Collection (GCC) provides several attributes that allow developers to customize how their code is compiled and linked. One such attribute is `alias`, which is particularly useful for providing alternative names (or aliases) for symbols, such as functions or variables.
+
+Using the `alias` attribute, one can make `symbol_B` an alias to `symbol_A`. This means that, in the binary code, references to `symbol_B` will resolve to `symbol_A`.
+
+**Syntax**:
+```c
+__attribute__((alias("original_symbol_name")))
+```
+
+**Example**:
+```c
+void original_function() {
+    // some code here
+}
+
+void __attribute__((alias("original_function"))) alias_function;
+```
+
+In this example, `alias_function` is an alias for `original_function`. Any calls to `alias_function` will redirect to `original_function`.
+
+---
+
+**Section 2: Technical Interview Questions & Answers**
+
+❓ **Question 1**: What is the primary use of the `alias` attribute in GCC?
+
+📝 **Answer**: The `alias` attribute in GCC is used to specify alternative names (or aliases) for symbols, allowing developers to reference a function or variable using different names. This can be particularly useful for maintaining backward compatibility or providing different symbol names for different use cases.
+
+❓ **Question 2**: Can an alias symbol have its own definition separate from the original symbol?
+
+📝 **Answer**: No, an alias symbol doesn't have its own separate definition. It merely provides a new name that points to the original symbol's definition. When you reference the alias, it redirects to the original symbol.
+
+❓ **Question 3**: How would you declare an alias for a global variable named `globalVar` with the alias name `gVar`?
+
+📝 **Answer**: You would use the following declaration:
+```c
+extern int globalVar;
+int __attribute__((alias("globalVar"))) gVar;
+```
+
+---
+
+**Section 3: Simplify the concept**
+
+🌟 **In Simple Words**:
+
+Imagine you have a popular café named "Coffee Central". As time goes on, you decide to also refer to your café as "CC" for short, especially for some branding or marketing purposes. Now, "CC" isn't a separate café but just another name for "Coffee Central". If someone wants to visit "CC", they're essentially visiting "Coffee Central".
+
+Similarly, in GCC, using the `alias` attribute, you can give a function (like our café) another name without creating a whole new function. When someone uses this new name in code, they're still accessing the original function. ☕👍
 
 
 ----
-We know on insmod, the function passed in the module_init macro is called, and on rmmod, the argument passed in the module_exit is called.
 
-Let's see the definition of this macro, it is present in linux/module.h
 
-/* Each module must use one module_init(). */
-#define module_init(initfn)                 \
-    static inline initcall_t __inittest(void)       \
-    { return initfn; }                  \
-    int init_module(void) __attribute__((alias(#initfn)));
+GCC Attribute alias allows you to specify multiple aliases(other names) for a symbol (function/variable).
 
-/* This is only required if you want to be unloadable. */
-#define module_exit(exitfn)                 \
-    static inline exitcall_t __exittest(void)       \
-    { return exitfn; }                  \
-    void cleanup_module(void) __attribute__((alias(#exitfn)));
-
-The purpose of defining __inittest function is to check during compile time, the function passed to module_init() macro is compatible with the initcall_t type.
-
-initcall_t is defined in linux/init.h:
-typedef int (*initcall_t)(void);
-
-If you declare module_init function which returns void instead of int, the compiler will throw warning:
-
-The last line uses the alias attribute of gcc to assign another name to init_module, so that you can have a better name as per your driver (e.g. cdrom_init instead of init_module), instead of each driver having init_module. 
-
-Same is the case with module_exit, giving whatever name in module_exit as parameter to cleanup_module.
