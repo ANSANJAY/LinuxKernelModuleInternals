@@ -1,4 +1,4 @@
-**Section 1: Explaining the Technical Concept**
+**Journey.c to .ko**
 
 📘 **Understanding the Kernel Module Compilation Process**:
 
