@@ -1,14 +1,19 @@
-**Section 1: Explain the technical concept**
-
 📚 **Kernel Module Initialization and Cleanup**:
 
-In Linux kernel programming, it's often necessary to execute certain functions when loading (`insmod`) or unloading (`rmmod`) a module. This is achieved using `module_init` and `module_exit` macros.
+In Linux kernel programming, it's often loading (`insmod`) or unloading (`rmmod`) a module. 
+
+- This is achieved using `module_init` and `module_exit` macros.
 
 - **module_init**: Specifies the function to be called at module insertion time (or at boot time if the module is compiled into the kernel).
   
 - **module_exit**: Specifies the function to be called at module removal time.
 
 🖥️ **Macros in `linux/module.h`**:
+
+Navigate to 
+/usr/src/kernels/6.2.15-100.fc36.x86_64/include/linux
+
+Replace by `6.2.15-100.fc36.x86_64` by your kernel version 
 
 1. **module_init**:
    
@@ -22,9 +27,10 @@ In Linux kernel programming, it's often necessary to execute certain functions w
 
 The `__inittest` and `__exittest` functions help ensure type safety during compile-time. The `initcall_t` type ensures that the function passed to `module_init` returns an integer (usually a status).
 
+![](./Screenshot%20from%202023-10-02%2000-04-20.png)
 ---
 
-**Section 2: Technical Interview Questions & Answers**
+**Curiosity**
 
 ❓ **Question 1**: What happens when you use the `module_init` macro in your kernel module?
 
